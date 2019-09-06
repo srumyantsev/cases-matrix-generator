@@ -122,14 +122,14 @@
                     <thead>
                         <tr>
                             <th v-for="requirement in requirements">
-                                {{ requirement.title }}
+                                <span v-html="requirement.title.replace(/(?:\r\n|\r|\n)/g, '<br />')"></span>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="resultCase in resultCases">
                             <td v-for="resultCaseItem in resultCase">
-                                <span v-html="resultCaseItem"></span>
+                                <span v-html="resultCaseItem.replace(/(?:\r\n|\r|\n)/g, '<br />')"></span>
                             </td>
                         </tr>
                     </tbody>
