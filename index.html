@@ -15,74 +15,24 @@
     <link rel="stylesheet" href="./grids-responsive.css">
     <!--<![endif]-->
     <script type="text/javascript" src="./vue.js"></script>
-    <script type="text/javascript">
-        const ControlTypes = {
-            // TEXT: 'text',
-            SELECT: 'select',
-            RESULT: 'result',
-        };
-
-        //http://cwestblog.com/2011/05/02/cartesian-product-of-multiple-arrays/
-        function cartesianProductOf() {
-            return Array.prototype.reduce.call(arguments, function (a, b) {
-                var ret = [];
-                a.forEach(function (a) {
-                    b.forEach(function (b) {
-                        ret.push(a.concat([b]));
-                    });
-                });
-                return ret;
-            }, [[]]);
-        }
-
-        window.addEventListener("load", function (event) {
-            new Vue({
-                el: '#app',
-                data: {
-                    requirements: [
-                        { title: 'Select example', type: ControlTypes.SELECT, options: [{ value: "Option #1" }, { value: "Option #2" }] },
-                        { title: 'Select example', type: ControlTypes.SELECT, options: [{ value: "Option #A" }, { value: "Option #B" }, { value: "Option #C" }] },
-                        { title: 'Result example', type: ControlTypes.RESULT, options: [{ value: "Option #1" }] }
-                    ],
-                    ControlTypes: ControlTypes,
-                },
-                computed: {
-                    resultCases: function () {
-                        return cartesianProductOf(...this.requirements.map(r => r.options.map(o => r.type === ControlTypes.SELECT ? o.value : "&nbsp;")));
-                    }
-                },
-                methods: {
-                    deleteItem: function (collection, itemIndex) {
-                        collection.splice(itemIndex, 1);
-                    },
-                    moveItem: function (collection, originalIndex, isUp) {
-                        let newIndex = isUp ? originalIndex - 1 : originalIndex + 1;
-                        let itemToMove = collection[originalIndex];
-                        Vue.set(collection, originalIndex, collection[newIndex]);
-                        Vue.set(collection, newIndex, itemToMove);
-                    },
-                    addRequirement: function (requirementIndex, isBefore) {
-                        let indexToAdd = isBefore ? requirementIndex : requirementIndex + 1;
-                        this.requirements.splice(indexToAdd, 0, this.createNewRequirement())
-                    },
-                    addRequirementOption: function (options, optionIndex, isBefore) {
-                        let indexToAdd = isBefore ? optionIndex : optionIndex + 1;
-                        options.splice(indexToAdd, 0, { value: "Option" });
-                    },
-                    createNewRequirement: function () {
-                        return { title: 'Select example', type: ControlTypes.SELECT, options: [{ value: "Option #1" }] };
-                    }
-                }
-            });
-        });
-    </script>
+    <script type="text/javascript" src="./app.js"></script>
+    <script type="text/javascript" src="./pure_menus.js"></script>
     <style type="text/css">
         table {
-            margin: 20px auto;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        textarea {
+            width: 100%;
         }
 
         .button-xsmall {
             font-size: 70%;
+        }
+
+        .pure-menu-link {
+            border: 1px solid #eee;
         }
     </style>
 </head>
@@ -97,7 +47,6 @@
                     <thead>
                         <tr>
                             <th>Title</th>
-                            <th>Type</th>
                             <th>Options</th>
                             <th>Actions</th>
                         </tr>
@@ -106,55 +55,63 @@
                     <tbody>
                         <tr v-for="(requirement, requirementIndex) in requirements">
                             <td>
-                                <input type="text" v-model="requirement.title" />
+                                <textarea v-model="requirement.title"></textarea>
                             </td>
                             <td>
-                                <select v-model="requirement.type">
-                                    <!-- <option>{{ ControlTypes.TEXT }}</option> -->
-                                    <option>{{ ControlTypes.SELECT }}</option>
-                                    <option>{{ ControlTypes.RESULT }}</option>
-                                </select>
+                                <table class="pure-table pure-table-bordered">
+                                    <tbody>
+                                        <tr v-for="(option, optionIndex) in requirement.options">
+                                            <td><textarea v-model="option.value"></textarea></td>
+                                            <td>
+                                                <div class="pure-menu pure-menu-horizontal">
+                                                    <ul class="pure-menu-list">
+                                                        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                                                            <a href="#" class="pure-menu-link">Actions</a>
+                                                            <ul class="pure-menu-children">
+                                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link"
+                                                                        :class="{ 'pure-button-disabled': optionIndex === 0 }"
+                                                                        @click="(event) => !(optionIndex === 0) ? moveItem(requirement.options, optionIndex, true) : event.preventDefault()">Up</a></li>
+                                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link"
+                                                                        :class="{ 'pure-button-disabled': optionIndex === requirement.options.length - 1 }"
+                                                                        @click="(event) => !(optionIndex === requirement.options.length - 1) ? moveItem(requirement.options, optionIndex, false) : event.preventDefault()">Down</a></li>
+                                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link"
+                                                                        @click="addRequirementOption(requirement.options, optionIndex, true)">Add
+                                                                        before</a></li>
+                                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link"
+                                                                        @click="addRequirementOption(requirement.options, optionIndex, false)">Add
+                                                                        after</a></li>
+                                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link"
+                                                                        :class="{ 'pure-button-disabled': requirement.options.length === 1 }"
+                                                                        @click="(event) => !(requirement.options.length === 1) ? deleteItem(requirement.options, optionIndex) : event.preventDefault()">Delete</a></li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </td>
                             <td>
-                                <template v-if="requirement.type === ControlTypes.SELECT">
-                                    <table class="pure-table pure-table-bordered">
-                                        <tbody>
-                                            <tr v-for="(option, optionIndex) in requirement.options">
-                                                <td><input type="text" v-model="option.value" /></td>
-                                                <td>
-                                                    <button class="pure-button pure-button-primary button-xsmall"
-                                                        :class="{ 'pure-button-disabled': optionIndex === 0 }"
-                                                        :disabled="optionIndex === 0" @click="moveItem(requirement.options, optionIndex, true)">Up</button>
-                                                    <button class="pure-button pure-button-primary button-xsmall"
-                                                        :class="{ 'pure-button-disabled': optionIndex === requirement.options.length - 1 }"
-                                                        :disabled="optionIndex === requirement.options.length - 1"
-                                                        @click="moveItem(requirement.options, optionIndex, false)">Down</button>
-                                                    <button class="pure-button pure-button-primary button-xsmall"
-                                                        @click="addRequirementOption(requirement.options, optionIndex, true)">Add
-                                                        before</button>
-                                                    <button class="pure-button pure-button-primary button-xsmall"
-                                                        @click="addRequirementOption(requirement.options, optionIndex, false)">Add
-                                                        after</button>
-                                                    <button class="pure-button pure-button-primary button-xsmall"
-                                                        :class="{ 'pure-button-disabled': requirement.options.length === 1 }"
-                                                        :disabled="requirement.options.length === 1" @click="deleteItem(requirement.options, optionIndex)">Delete</button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </template>
-                            </td>
-                            <td>
-                                <button class="pure-button pure-button-primary button-xsmall" :class="{ 'pure-button-disabled': requirementIndex === 0 }"
-                                    :disabled="requirementIndex === 0" @click="moveItem(requirements, requirementIndex, true)">Up</button>
-                                <button class="pure-button pure-button-primary button-xsmall" :class="{ 'pure-button-disabled': requirementIndex === requirements.length - 1 }"
-                                    :disabled="requirementIndex === requirements.length - 1" @click="moveItem(requirements, requirementIndex, false)">Down</button>
-                                <button class="pure-button pure-button-primary button-xsmall" @click="addRequirement(requirementIndex, true)">Add
-                                    before</button>
-                                <button class="pure-button pure-button-primary button-xsmall" @click="addRequirement(requirementIndex, false)">Add
-                                    after</button>
-                                <button class="pure-button pure-button-primary button-xsmall" :class="{ 'pure-button-disabled': requirements.length === 1 }"
-                                    :disabled="requirements.length === 1" @click="deleteItem(requirements, requirementIndex)">Delete</button>
+                                <div class="pure-menu pure-menu-horizontal">
+                                    <ul class="pure-menu-list">
+                                        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                                            <a href="#" class="pure-menu-link">Actions</a>
+                                            <ul class="pure-menu-children">
+                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link" :class="{ 'pure-button-disabled': requirementIndex === 0 }"
+                                                    @click="(event) => !(requirementIndex === 0) ? moveItem(requirements, requirementIndex, true) : event.preventDefault()">Up</a></li>
+                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link" :class="{ 'pure-button-disabled': requirementIndex === requirements.length - 1 }"
+                                                    @click="!(requirementIndex === requirements.length - 1) ? moveItem(requirements, requirementIndex, false) : event.preventDefault()">Down</a></li>
+                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link" @click="addRequirement(requirementIndex, true)">Add
+                                                    before</a></li>
+                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link" @click="addRequirement(requirementIndex, false)">Add
+                                                    after</a></li>
+                                                <li class="pure-menu-item"><a href="#" class="pure-menu-link" :class="{ 'pure-button-disabled': requirements.length === 1 }"
+                                                    @click="(event) => !(requirements.length === 1) ? deleteItem(requirements, requirementIndex) : event.preventDefault()">Delete</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -180,17 +137,17 @@
 
                 <h1>Cases list</h1>
                 <ul>
-                    <li v-for="resultCase in resultCases">
-                        <strong>Parameters: </strong><template v-for="requirement in requirements.filter(r => r.type !== ControlTypes.RESULT)">{{
-                            requirement.title }}: <span v-html="resultCase[requirements.indexOf(requirement)]"></span>&nbsp;</template>
-                        <strong>Results: </strong><template v-for="requirement in requirements.filter(r => r.type === ControlTypes.RESULT)">{{
-                            requirement.title }}: <span v-html="resultCase[requirements.indexOf(requirement)]"></span>&nbsp;</template>
+                    <li v-for="(resultCase, resultCaseIndex) in resultCases">
+                        <strong>Case #{{++resultCaseIndex}}: </strong>
+                        <ul>
+                            <li v-for="requirement in requirements">{{
+                                requirement.title }}: <span v-html="resultCase[requirements.indexOf(requirement)]"></span></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
-    </div> <!-- end content -->
 </body>
 
 </html>
