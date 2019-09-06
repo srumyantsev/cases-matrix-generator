@@ -41,6 +41,12 @@
             font-size: 70%;
         }
 
+        .cases-table,
+        .cases-table td,
+        .cases-table th {
+            border: 1px solid #000;
+        }
+
         .pure-menu-link {
             border: 1px solid #eee;
         }
@@ -59,7 +65,7 @@
                         <strong>Tips:</strong> HTML tags supported inside text
                     </p>
                 </blockquote>
-                <table class="pure-table pure-table-bordered">
+                <table class="pure-table pure-table-horizontal">
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -74,7 +80,7 @@
                                 <textarea v-model="requirement.title"></textarea>
                             </td>
                             <td>
-                                <table class="pure-table pure-table-bordered">
+                                <table class="pure-table pure-table-horizontal">
                                     <tbody>
                                         <tr v-for="(option, optionIndex) in requirement.options">
                                             <td><textarea v-model="option.value"></textarea></td>
@@ -134,7 +140,7 @@
                 </table>
 
                 <h1>Cases table</h1>
-                <table class="pure-table pure-table-bordered">
+                <table class="pure-table pure-table-bordered cases-table">
                     <thead>
                         <tr>
                             <th v-for="requirement in requirements">
