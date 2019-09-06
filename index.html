@@ -18,6 +18,16 @@
     <script type="text/javascript" src="./app.js"></script>
     <script type="text/javascript" src="./pure_menus.js"></script>
     <style type="text/css">
+        blockquote {
+            margin: 0;
+        }
+
+        blockquote p {
+            padding: 15px;
+            background: #eee;
+            border-radius: 5px;
+        }
+
         table {
             margin: 0 auto;
             width: 100%;
@@ -43,6 +53,12 @@
         <div class="pure-u-18-24">
             <div id="app">
                 <h1>Requirements</h1>
+                <blockquote>
+                    <p><strong>Usage:</strong> Add requirements and their options. Application produce all possible
+                        combinations of all options (Cartesian product).<br />
+                        <strong>Tips:</strong> HTML tags supported inside text
+                    </p>
+                </blockquote>
                 <table class="pure-table pure-table-bordered">
                     <thead>
                         <tr>
@@ -99,15 +115,15 @@
                                             <a href="#" class="pure-menu-link">Actions</a>
                                             <ul class="pure-menu-children">
                                                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" :class="{ 'pure-button-disabled': requirementIndex === 0 }"
-                                                    @click="(event) => !(requirementIndex === 0) ? moveItem(requirements, requirementIndex, true) : event.preventDefault()">Up</a></li>
+                                                        @click="(event) => !(requirementIndex === 0) ? moveItem(requirements, requirementIndex, true) : event.preventDefault()">Up</a></li>
                                                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" :class="{ 'pure-button-disabled': requirementIndex === requirements.length - 1 }"
-                                                    @click="!(requirementIndex === requirements.length - 1) ? moveItem(requirements, requirementIndex, false) : event.preventDefault()">Down</a></li>
+                                                        @click="!(requirementIndex === requirements.length - 1) ? moveItem(requirements, requirementIndex, false) : event.preventDefault()">Down</a></li>
                                                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" @click="addRequirement(requirementIndex, true)">Add
-                                                    before</a></li>
+                                                        before</a></li>
                                                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" @click="addRequirement(requirementIndex, false)">Add
-                                                    after</a></li>
+                                                        after</a></li>
                                                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" :class="{ 'pure-button-disabled': requirements.length === 1 }"
-                                                    @click="(event) => !(requirements.length === 1) ? deleteItem(requirements, requirementIndex) : event.preventDefault()">Delete</a></li>
+                                                        @click="(event) => !(requirements.length === 1) ? deleteItem(requirements, requirementIndex) : event.preventDefault()">Delete</a></li>
                                             </ul>
                                         </li>
                                     </ul>
