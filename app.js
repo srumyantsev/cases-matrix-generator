@@ -16,9 +16,9 @@
                 el: '#app',
                 data: {
                     requirements: [
-                        { title: 'Select example', options: [{ value: "Option #1" }, { value: "Option #2" }] },
-                        { title: 'Select example', options: [{ value: "Option #A" }, { value: "Option #B" }, { value: "Option #C" }] },
-                        { title: 'Result example', options: [{ value: "" }] }
+                        { title: 'Requirement #1', options: [{ value: "Option #1" }, { value: "Option #2" }] },
+                        { title: 'Requirement #2', options: [{ value: "Option #A" }, { value: "Option #B" }, { value: "Option #C" }] },
+                        { title: 'Requirement #3', options: [{ value: "" }] }
                     ]
                 },
                 computed: {
@@ -44,10 +44,10 @@
                     },
                     addRequirementOption: function (options, optionIndex, isBefore) {
                         let indexToAdd = isBefore ? optionIndex : optionIndex + 1;
-                        options.splice(indexToAdd, 0, { value: "Option" });
+                        options.splice(indexToAdd, 0, { value: "New option" });
                     },
                     createNewRequirement: function () {
-                        return { title: 'Select example', options: [{ value: "Option #1" }] };
+                        return { title: 'New requirement', options: [{ value: "New option" }] };
                     }
                 }
             });
